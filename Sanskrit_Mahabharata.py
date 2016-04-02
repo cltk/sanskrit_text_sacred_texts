@@ -1,4 +1,5 @@
 import urllib
+import urllib.request
 import re
 import os 
 import string
@@ -14,16 +15,20 @@ def write_text(col1,target):
 	no_sentences=0
 	for l in range(len(col1)):
 				line=col1[l].strip()
-				#print line.encode('utf-8')
 				if line!="":
-					target.write(line.encode('utf-8'))
+					target.write(col1[l].strip())
 					target.write("\n")
 					no_sentences+=1
 	return no_sentences
 
+def get_html(url_link):
+	with urllib.request.urlopen(url_link) as url:
+		return url.read()
+		
 def scrap_doc(url_chapter,name,book_name):	
 	
-	html = urllib.urlopen(url_chapter)
+	#html = urllib.urlopen(url_chapter)
+	html=get_html(url_chapter)
 	soup = BeautifulSoup(html)
 	
 
@@ -40,17 +45,19 @@ def scrap_doc(url_chapter,name,book_name):
 	target_s = open("dataset/Mahabharata/"+folder+"/"+name+"_sans.txt", 'w')
 
 	if (write_text(col1,target_s) != write_text(col2,target_r)):
-		print name
+		print (name)
+
 	
 def get_chapter_links(link):
 
 	directory="dataset/Mahabharata/"+link[:-4]
 	if not os.path.exists(directory):
 			os.makedirs(directory)
-	print directory		
+	print (directory)		
 	url="http://sacred-texts.com/hin/mbs/"+link
 	book_name=link
-	html = urllib.urlopen(url)
+	#html = urllib.urlopen(url)
+	html=get_html(url)
 	soup = BeautifulSoup(html)
 
 	h_tag=soup.find('hr')
@@ -66,7 +73,8 @@ def get_links_books():
 			os.makedirs(directory)
 	url="http://sacred-texts.com/hin/mbs/index.htm"
 	
-	html = urllib.urlopen(url)
+	#html = urllib.urlopen(url)
+	html=get_html(url)
 	soup = BeautifulSoup(html)
 
 
